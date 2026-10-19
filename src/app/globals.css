@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #04060c;
+  --color-ink-900: #070b13;
+  --color-ink-850: #0a101b;
+  --color-ink-800: #0f1725;
+  --color-ink-750: #14202f;
+  --color-ink-700: #1b2939;
+  --color-line: #1e2c3e;
+  --color-line-soft: #16212f;
+  --color-mint: #34d399;
+  --color-signal-amber: #fbbf24;
+  --color-signal-rose: #fb7185;
+  --color-ice: #7dd3fc;
+  --color-violet-signal: #a78bfa;
+  --font-sans: ui-sans-serif, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #04060c;
+  background-image:
+    radial-gradient(1200px 620px at 12% -10%, rgba(56, 189, 248, 0.09), transparent 62%),
+    radial-gradient(900px 520px at 96% 4%, rgba(167, 139, 250, 0.08), transparent 60%),
+    radial-gradient(700px 500px at 50% 120%, rgba(52, 211, 153, 0.06), transparent 65%);
+  color: #dbe4f0;
+  font-family: var(--font-sans);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.canvas-grid {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(to right, rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+  background-size: 140px 140px, 140px 140px, 28px 28px, 28px 28px;
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #24384c transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: #22344a;
+  border-radius: 99px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(251, 113, 133, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 113, 133, 0);
+  }
+}
+.pulse-critical {
+  animation: pulse-ring 1.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes soft-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.blink {
+  animation: soft-blink 1.6s ease-in-out infinite;
+}
+
+@keyframes sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+.sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.22), transparent);
+  animation: sweep 2.6s linear infinite;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
