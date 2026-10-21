@@ -142,6 +142,15 @@ export const TopBar = memo(function TopBar() {
             <Icon name="refresh" size={11} />
             reseed
           </button>
+
+          <a
+            href="/guide"
+            className="flex h-8 items-center gap-1.5 rounded-md border border-ice/30 bg-ice/[0.07] px-2 font-mono text-[9.5px] uppercase tracking-[0.14em] text-ice transition hover:bg-ice/[0.14]"
+            title="Open the user guide: architecture, administration, integration patterns and samples"
+          >
+            <Icon name="shield" size={11} />
+            guide
+          </a>
         </div>
       </div>
 
