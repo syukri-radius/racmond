@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useTheme } from "@/store/theme";
-import { Icon } from "@/components/ops/icons";
+import { Icon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 
 /**
