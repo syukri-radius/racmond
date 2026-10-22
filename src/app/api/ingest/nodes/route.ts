@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { eq, sql } from "drizzle-orm";
-import { db } from "@/db";
-import { metrics, nodes } from "@/db/schema";
+import { db } from "@/db/ops";
+import { metrics, nodes } from "@/db/ops-schema";
 import { ensureSeeded } from "@/lib/seed";
 import { baselineFor } from "@/lib/seed";
 import { engine, startEngine } from "@/lib/telemetry";

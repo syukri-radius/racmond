@@ -1,5 +1,5 @@
-import { db } from "@/db";
-import { metrics as metricsTable, nodes as nodesTable } from "@/db/schema";
+import { db } from "@/db/ops";
+import { metrics as metricsTable, nodes as nodesTable } from "@/db/ops-schema";
 import { ensureSeeded, loadSeries, recentEvents, toTopologyNode } from "@/lib/seed";
 import { engine, listRuns, startEngine } from "@/lib/telemetry";
 import type { MetricSnapshot, TopologyNode, TopologyPayload } from "@/lib/types";

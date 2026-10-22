@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { events as eventsTable } from "@/db/schema";
+import { db } from "@/db/ops";
+import { events as eventsTable } from "@/db/ops-schema";
 import { ensureSeeded } from "@/lib/seed";
 import { recentEvents } from "@/lib/seed";
 

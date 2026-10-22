@@ -1,6 +1,6 @@
 import { and, count, desc, eq, gte, inArray } from "drizzle-orm";
-import { db } from "@/db";
-import { events, metricSamples, metrics, nodes, commandRuns } from "@/db/schema";
+import { db } from "@/db/ops";
+import { events, metricSamples, metrics, nodes, commandRuns } from "@/db/ops-schema";
 import type { MetricSnapshot, NodeStatus, NodeType, TopologyNode } from "@/lib/types";
 import { MONITORED_TYPES } from "@/lib/types";
 import { buildSeedTopology, FORCED_STATUSES, SEED_EVENT_TEMPLATES, type SeedNode } from "@/lib/seed/topology";

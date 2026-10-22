@@ -1,120 +1,223 @@
-import {
-  boolean,
-  index,
-  integer,
-  jsonb,
-  pgTable,
-  real,
-  serial,
-  text,
-  timestamp,
-} from "drizzle-orm/pg-core";
+import { randomUUID } from "node:crypto";
+import { sql } from "drizzle-orm";
+import { index, integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 /**
- * Every level of the enterprise hierarchy (organization -> sub-org -> project
- * -> datacenter -> server/container/pod -> service group -> service -> endpoint)
- * lives in one self referencing table. `parentId` + `extent: 'parent'` semantics
- * are enforced by the renderer, parents are always emitted before children.
+ * dockflow schema — SQLite/libSQL, drizzle-orm v1.
+ *
+ * Conventions:
+ *  - TEXT uuid4 primary keys (randomUUID from node:crypto)
+ *  - INTEGER unix-seconds timestamps with { mode: "timestamp" }
+ *  - TEXT { mode: "json" } for structured payloads
+ *  - INTEGER { mode: "boolean" } for flags
+ *  - AUTOINCREMENT INTEGER only for high volume append-only rows (spans, dumps)
+ *  - table extra config returns an ARRAY (v1 removed the keyed-object form)
  */
-export const nodes = pgTable(
-  "ops_nodes",
+
+const id = () =>
+  text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID());
+
+const createdAt = () =>
+  integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date());
+
+const updatedAt = () =>
+  integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .$defaultFn(() => new Date())
+    .$onUpdateFn(() => new Date());
+
+/* ------------------------------------------------------------------ engine */
+
+export const dockerHosts = sqliteTable(
+  "docker_hosts",
   {
-    id: text("id").primaryKey(),
-    parentId: text("parent_id"),
+    id: id(),
     name: text("name").notNull(),
-    type: text("type").notNull(),
-    kind: text("kind"),
-    status: text("status").notNull().default("healthy"),
-    region: text("region"),
-    owner: text("owner"),
-    meta: jsonb("meta").$type<Record<string, unknown>>().notNull().default({}),
-    /** manual drag offset (relative to the parent container) */
-    x: real("x"),
-    y: real("y"),
-    sortOrder: integer("sort_order").notNull().default(0),
-    collapsed: boolean("collapsed").notNull().default(false),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    endpoint: text("endpoint").notNull(),
+    kind: text("kind", { enum: ["unix", "tcp", "npipe"] }).notNull().default("unix"),
+    isDefault: integer("is_default", { mode: "boolean" }).notNull().default(false),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
   },
-  (table) => [index("ops_nodes_parent_idx").on(table.parentId), index("ops_nodes_type_idx").on(table.type)],
+  (table) => [uniqueIndex("docker_hosts_endpoint_idx").on(table.endpoint)],
 );
 
-/** Latest metric snapshot for a monitored node (server / container / pod / service). */
-export const metrics = pgTable(
-  "ops_metrics",
+/* --------------------------------------------------------------------- apm */
+
+export const apmServices = sqliteTable(
+  "apm_services",
   {
-    nodeId: text("node_id")
-      .primaryKey()
-      .references(() => nodes.id, { onDelete: "cascade" }),
-    cpu: real("cpu").notNull().default(0),
-    memory: real("memory").notNull().default(0),
-    disk: real("disk").notNull().default(0),
-    networkIn: real("network_in").notNull().default(0),
-    networkOut: real("network_out").notNull().default(0),
-    requestsPerSec: real("requests_per_sec").notNull().default(0),
-    errorRate: real("error_rate").notNull().default(0),
-    latencyMs: real("latency_ms").notNull().default(0),
-    uptimePct: real("uptime_pct").notNull().default(100),
-    replicasReady: integer("replicas_ready").notNull().default(0),
-    replicasDesired: integer("replicas_desired").notNull().default(0),
-    /** prometheus | docker | kubernetes | agent */
-    source: text("source").notNull().default("prometheus"),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    id: id(),
+    key: text("key").notNull(),
+    name: text("name").notNull(),
+    team: text("team"),
+    kind: text("kind").notNull().default("service"),
+    runtime: text("runtime"),
+    slaLatencyMs: real("sla_latency_ms").notNull().default(300),
+    slaErrorRate: real("sla_error_rate").notNull().default(1),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
   },
-  (table) => [index("ops_metrics_updated_idx").on(table.updatedAt)],
+  (table) => [uniqueIndex("apm_services_key_idx").on(table.key)],
 );
 
-/** Rolling time series used for sparklines (kept small: last N samples per node). */
-export const metricSamples = pgTable(
-  "ops_metric_samples",
+export const apmAgents = sqliteTable(
+  "apm_agents",
   {
-    id: serial("id").primaryKey(),
-    nodeId: text("node_id")
-      .notNull()
-      .references(() => nodes.id, { onDelete: "cascade" }),
-    metric: text("metric").notNull(),
-    value: real("value").notNull(),
-    ts: timestamp("ts", { withTimezone: true }).notNull().defaultNow(),
+    id: id(),
+    agent: text("agent").notNull(),
+    serviceKey: text("service_key").notNull(),
+    host: text("host"),
+    runtime: text("runtime"),
+    lastSeenAt: integer("last_seen_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+    spanCount: integer("span_count").notNull().default(0),
+  },
+  (table) => [uniqueIndex("apm_agents_agent_idx").on(table.agent)],
+);
+
+export const apmSpans = sqliteTable(
+  "apm_spans",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    traceId: text("trace_id").notNull(),
+    spanId: text("span_id").notNull(),
+    parentSpanId: text("parent_span_id"),
+    serviceKey: text("service_key").notNull(),
+    operation: text("operation").notNull(),
+    kind: text("kind", { enum: ["server", "client", "internal"] }).notNull().default("server"),
+    startTime: integer("start_time").notNull(),
+    durationMs: real("duration_ms").notNull().default(0),
+    status: text("status", { enum: ["ok", "error"] }).notNull().default("ok"),
+    errorMessage: text("error_message"),
+    tags: text("tags", { mode: "json" }).$type<Record<string, unknown>>(),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
   },
   (table) => [
-    index("ops_samples_node_metric_ts_idx").on(table.nodeId, table.metric, table.ts),
+    index("apm_spans_trace_idx").on(table.traceId),
+    index("apm_spans_start_idx").on(table.startTime),
+    index("apm_spans_service_idx").on(table.serviceKey, table.startTime),
   ],
 );
 
-/** Alert / audit stream surfaced in the live event log. */
-export const events = pgTable(
-  "ops_events",
+export const apmEdges = sqliteTable(
+  "apm_edges",
   {
-    id: serial("id").primaryKey(),
-    nodeId: text("node_id").references(() => nodes.id, { onDelete: "cascade" }),
-    severity: text("severity").notNull().default("info"),
-    source: text("source").notNull().default("telemetry"),
-    title: text("title").notNull(),
-    detail: text("detail"),
-    acknowledged: boolean("acknowledged").notNull().default(false),
-    ts: timestamp("ts", { withTimezone: true }).notNull().defaultNow(),
+    id: id(),
+    sourceService: text("source_service").notNull(),
+    targetService: text("target_service").notNull(),
+    calls: integer("calls").notNull().default(0),
+    errors: integer("errors").notNull().default(0),
+    totalMs: real("total_ms").notNull().default(0),
+    updatedAt: updatedAt(),
   },
-  (table) => [index("ops_events_ts_idx").on(table.ts), index("ops_events_node_idx").on(table.nodeId)],
+  (table) => [uniqueIndex("apm_edges_pair_idx").on(table.sourceService, table.targetService)],
 );
 
-/** CLI executor run log (runbooks / remote commands against a node). */
-export const commandRuns = pgTable(
-  "ops_command_runs",
+/* --------------------------------------------------------------- workflows */
+
+export const workflows = sqliteTable("workflows", {
+  id: id(),
+  name: text("name").notNull(),
+  description: text("description"),
+  nodes: text("nodes", { mode: "json" }).$type<unknown[]>().notNull().default(sql`'[]'`),
+  edges: text("edges", { mode: "json" }).$type<unknown[]>().notNull().default(sql`'[]'`),
+  enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+export const workflowRuns = sqliteTable(
+  "workflow_runs",
   {
-    id: serial("id").primaryKey(),
-    nodeId: text("node_id").references(() => nodes.id, { onDelete: "cascade" }),
-    command: text("command").notNull(),
-    operator: text("operator").notNull().default("operator@noc"),
-    status: text("status").notNull().default("running"),
-    exitCode: integer("exit_code"),
-    output: text("output").notNull().default(""),
-    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
-    finishedAt: timestamp("finished_at", { withTimezone: true }),
+    id: id(),
+    workflowId: text("workflow_id").notNull(),
+    workflowName: text("workflow_name"),
+    status: text("status", { enum: ["pending", "running", "success", "failed", "cancelled"] })
+      .notNull()
+      .default("pending"),
+    trigger: text("trigger", { mode: "json" }).$type<Record<string, unknown>>(),
+    steps: text("steps", { mode: "json" }).$type<unknown[]>().notNull().default(sql`'[]'`),
+    error: text("error"),
+    cancelRequested: integer("cancel_requested", { mode: "boolean" }).notNull().default(false),
+    startedAt: integer("started_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+    finishedAt: integer("finished_at", { mode: "timestamp" }),
   },
-  (table) => [index("ops_command_runs_started_idx").on(table.startedAt)],
+  (table) => [index("workflow_runs_workflow_idx").on(table.workflowId, table.startedAt)],
 );
 
-export type NodeRow = typeof nodes.$inferSelect;
-export type MetricRow = typeof metrics.$inferSelect;
-export type EventRow = typeof events.$inferSelect;
-export type CommandRunRow = typeof commandRuns.$inferSelect;
+/* --------------------------------------------------------------------- jvm */
+
+export const jvmTargets = sqliteTable("jvm_targets", {
+  id: id(),
+  name: text("name").notNull(),
+  kind: text("kind", { enum: ["jolokia", "actuator", "simulated"] }).notNull().default("simulated"),
+  url: text("url"),
+  containerId: text("container_id"),
+  note: text("note"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+export const jvmDumps = sqliteTable(
+  "jvm_dumps",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    targetId: text("target_id").notNull(),
+    kind: text("kind", { enum: ["thread", "heap", "profiler"] }).notNull(),
+    label: text("label").notNull(),
+    size: integer("size").notNull().default(0),
+    path: text("path"),
+    summary: text("summary", { mode: "json" }).$type<Record<string, unknown>>(),
+    content: text("content"),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+  },
+  (table) => [index("jvm_dumps_target_idx").on(table.targetId, table.createdAt)],
+);
+
+export const jvmSessions = sqliteTable("jvm_sessions", {
+  id: id(),
+  targetId: text("target_id").notNull(),
+  kind: text("kind").notNull().default("sampler"),
+  status: text("status", { enum: ["idle", "running", "stopped", "saved"] }).notNull().default("idle"),
+  windowMs: integer("window_ms").notNull().default(10000),
+  intervalMs: integer("interval_ms").notNull().default(50),
+  samples: integer("samples").notNull().default(0),
+  result: text("result", { mode: "json" }).$type<Record<string, unknown>>(),
+  startedAt: integer("started_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+  stoppedAt: integer("stopped_at", { mode: "timestamp" }),
+});
+
+/* --------------------------------------------------------------------- cli */
+
+export const cliTools = sqliteTable("cli_tools", {
+  id: id(),
+  name: text("name").notNull(),
+  binary: text("binary").notNull(),
+  baseArgs: text("base_args").notNull().default(""),
+  cwd: text("cwd"),
+  env: text("env", { mode: "json" }).$type<Record<string, string>>(),
+  category: text("category").notNull().default("general"),
+  favourite: integer("favourite", { mode: "boolean" }).notNull().default(false),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/* ------------------------------------------------------------------ config */
+
+export const configSources = sqliteTable("config_sources", {
+  id: id(),
+  name: text("name").notNull(),
+  kind: text("kind", { enum: ["compose", "terraform", "github", "dockerfile", "workspace"] }).notNull(),
+  target: text("target").notNull(),
+  content: text("content"),
+  summary: text("summary", { mode: "json" }).$type<Record<string, unknown>>(),
+  status: text("status").notNull().default("loaded"),
+  lastError: text("last_error"),
+  lastLoadedAt: integer("last_loaded_at", { mode: "timestamp" }),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});

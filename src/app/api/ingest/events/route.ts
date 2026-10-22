@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
-import { events } from "@/db/schema";
+import { db } from "@/db/ops";
+import { events } from "@/db/ops-schema";
 import { ensureSeeded } from "@/lib/seed";
 import { broadcast, engine, startEngine } from "@/lib/telemetry";
 
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
   // a critical external alert also escalates the node status on the canvas
   if (nodeId && severity === "critical") {
     const { db: dbClient } = await import("@/db");
-    const { nodes } = await import("@/db/schema");
+    const { nodes } = await import("@/db/ops-schema");
     const { eq } = await import("drizzle-orm");
     await dbClient.update(nodes).set({ status: "critical" }).where(eq(nodes.id, nodeId));
     engine.status.set(nodeId, "critical");

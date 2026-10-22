@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
-import { db } from "@/db";
-import { commandRuns, events as eventsTable, metricSamples, metrics, nodes } from "@/db/schema";
+import { db } from "@/db/ops";
+import { commandRuns, events as eventsTable, metricSamples, metrics, nodes } from "@/db/ops-schema";
 import { ensureSeeded } from "@/lib/seed";
 import type { Runbook } from "@/lib/telemetry-types";
 import type { CommandRun, EventItem, MetricSnapshot, MetricSource, NodeStatus, NodeType } from "@/lib/types";

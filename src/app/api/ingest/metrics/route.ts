@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
-import { db } from "@/db";
-import { metrics } from "@/db/schema";
+import { db } from "@/db/ops";
+import { metrics } from "@/db/ops-schema";
 import { ensureSeeded } from "@/lib/seed";
 import { broadcast, engine, startEngine } from "@/lib/telemetry";
 import type { MetricSource } from "@/lib/types";
@@ -108,7 +108,7 @@ export async function POST(request: Request) {
           : "healthy";
     if (next !== current) {
       const { db: dbClient } = await import("@/db");
-      const { nodes } = await import("@/db/schema");
+      const { nodes } = await import("@/db/ops-schema");
       const { eq } = await import("drizzle-orm");
       await dbClient.update(nodes).set({ status: next }).where(eq(nodes.id, nodeId));
       engine.status.set(nodeId, next);
