@@ -46,7 +46,7 @@ export const SideRail = memo(function SideRail() {
   }, [query, list, statusFilter]);
 
   return (
-    <aside className="flex w-[272px] shrink-0 flex-col border-r border-line bg-ink-900/70">
+    <aside className="glass-panel flex w-[272px] shrink-0 flex-col border-r border-line">
       <header className="flex h-8 shrink-0 items-center justify-between border-b border-line-soft px-2.5">
         <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">
           <Icon name="tree" size={12} className="text-ice" />
@@ -108,7 +108,7 @@ const SearchRow = memo(function SearchRow({ node, path }: { node: TopologyNode; 
     <button
       type="button"
       onClick={() => requestFocus(node.id)}
-      className="flex w-full flex-col items-start gap-[1px] border-b border-line-soft/60 px-2.5 py-1.5 text-left transition hover:bg-ink-800"
+      className="flex w-full flex-col items-start gap-[1px] border-b border-line-soft/60 px-2.5 py-1.5 text-left transition hover:bg-slate-100/[0.04]"
     >
       <span className="flex w-full items-center gap-1.5">
         <Icon name={TYPE_ICON[node.type]} size={11} className="text-slate-500" />

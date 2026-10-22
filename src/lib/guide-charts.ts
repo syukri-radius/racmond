@@ -219,9 +219,9 @@ export const CHART_LAYOUT_PIPELINE = `flowchart LR
   E --> F["6 · SubFlowNode render<br/>relative pos<br/>extent:parent clamp"]
   F --> G["7 · drag override<br/>PATCH /api/nodes/id"]
 
-  style A fill:#0f1725,stroke:#7dd3fc
-  style D fill:#14202f,stroke:#a78bfa
-  style F fill:#0f1725,stroke:#34d399`;
+  style A fill:#1b1236,stroke:#a78bfa,color:#ece4fb
+  style D fill:#221745,stroke:#c4b5fd,color:#ece4fb
+  style F fill:#1b1236,stroke:#34d399,color:#d9f8ec`;
 
 export const CHART_ADMIN_OPS = `flowchart TB
   START(["Operator opens dashboard"]) --> LIVE{"Live stream open?"}
@@ -289,5 +289,5 @@ export const CHART_MINIO_FLOW = `flowchart LR
   EVTOPS --> SSE["SSE → dock row<br/>click to focus"]
   METOPS --> GAUGE["Disk gauge<br/>on storage node"]
 
-  style S3 fill:#14202f,stroke:#fbbf24
-  style BRIDGE fill:#0f1725,stroke:#7dd3fc`;
+  style S3 fill:#221745,stroke:#fbbf24,color:#fdeccb
+  style BRIDGE fill:#1b1236,stroke:#a78bfa,color:#ece4fb`;

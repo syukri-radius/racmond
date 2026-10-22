@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mermaid } from "@/components/guide/Mermaid";
 import { CodeBlock } from "@/components/guide/CodeBlock";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import {
   CHART_ADMIN_OPS,
   CHART_ER,
@@ -137,7 +138,7 @@ function Callout({ tone, title, children }: { tone: "ice" | "amber" | "rose" | "
     mint: "border-emerald-500/30 bg-emerald-500/[0.07]",
   };
   return (
-    <div className={`rounded-lg border px-3 py-2.5 text-[12.5px] ${tones[tone]}`}>
+    <div className={`glass-inset rounded-lg border px-3 py-2.5 text-[12.5px] ${tones[tone]}`}>
       <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-200">{title}</p>
       <div className="mt-1 text-slate-300">{children}</div>
     </div>
@@ -146,9 +147,9 @@ function Callout({ tone, title, children }: { tone: "ice" | "amber" | "rose" | "
 
 export default function GuidePage() {
   return (
-    <div className="h-screen w-screen overflow-hidden bg-ink-950">
+    <div className="h-screen w-screen overflow-hidden bg-transparent">
       {/* top bar */}
-      <header className="flex h-12 shrink-0 items-center gap-3 border-b border-line bg-ink-900/90 px-4">
+      <header className="glass-bar flex h-12 shrink-0 items-center gap-3 border-b border-line px-4">
         <Link
           href="/"
           className="flex items-center gap-1.5 rounded border border-line px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-slate-400 transition hover:border-ice/50 hover:text-ice"
@@ -179,6 +180,7 @@ export default function GuidePage() {
             </a>
           ))}
         </nav>
+        <ThemeToggle className="ml-auto lg:ml-1" />
       </header>
 
       <div className="mx-auto flex h-[calc(100vh-3rem)] max-w-[1280px]">
@@ -198,7 +200,7 @@ export default function GuidePage() {
               </a>
             ))}
           </nav>
-          <div className="mt-4 rounded-lg border border-line bg-ink-900/60 p-2.5">
+          <div className="glass-card mt-4 rounded-lg border border-line p-2.5">
             <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">live endpoints</p>
             <ul className="mt-1.5 flex flex-col gap-1 font-mono text-[10px] text-slate-400">
               <li>GET /api/topology</li>
@@ -215,7 +217,7 @@ export default function GuidePage() {
         {/* content */}
         <main className="min-w-0 flex-1 overflow-y-auto px-4 pb-24 pt-4 md:px-8">
           {/* hero */}
-          <div className="rounded-xl border border-line bg-gradient-to-br from-ink-850 via-ink-900 to-ink-950 p-5">
+          <div className="glass-card rounded-2xl border border-line bg-gradient-to-br from-ink-850/70 via-ink-900/50 to-ink-950/30 p-5">
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ice">
               hierarchical operation control &amp; monitoring
             </p>
@@ -251,7 +253,7 @@ export default function GuidePage() {
                 ["2 · operate it", "Click any node for the inspector. Run snapshot → restart → scale from the CLI tab. Ack alerts in the dock. Dragging is clamped to the parent (extent:parent)."],
                 ["3 · feed it", "Register your service with POST /api/ingest/nodes, push metrics every 20–30s, raise deploys as events. It appears on the canvas in under 2 seconds."],
               ].map(([t, d]) => (
-                <div key={t} className="rounded-lg border border-line bg-ink-900/60 p-3">
+                <div key={t} className="glass-card rounded-lg border border-line p-3">
                   <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ice">{t}</p>
                   <p className="mt-1 text-[12.5px] leading-relaxed text-slate-300">{d}</p>
                 </div>
@@ -460,8 +462,21 @@ export default function GuidePage() {
                 ["drag node", "Canvas", "Moves within the parent only (extent:parent). Offset persists via PATCH on release."],
                 ["double-click", "Canvas group", "Collapses/expands that sub-flow in place without moving the viewport."],
                 ["reseed", "Top bar", "Rebuilds the 456-node reference dataset. Destroys manual edits — confirm before pressing in shared envs."],
+                ["theme", "Top bar · guide header", "Switches between the dark and light purple glassmorphism themes. The choice is stored per browser; until one is made the OS preference is followed."],
               ]}
             />
+            <Callout tone="ice" title="appearance & design tokens">
+              All chrome is glass: translucent surfaces, a 22px backdrop blur, 1px lavender
+              borders and a soft inner highlight. Colours live in{" "}
+              <code className="font-mono text-[12px] text-ice">src/app/globals.css</code> as CSS
+              variables — <code className="font-mono text-[12px] text-ice">--ink-*</code> for
+              surfaces, <code className="font-mono text-[12px] text-ice">--accent</code> for the
+              purple interactive accent,{" "}
+              <code className="font-mono text-[12px] text-ice">--type-*</code> per node type and{" "}
+              <code className="font-mono text-[12px] text-ice">--glass-*</code> for the glass
+              recipe. Both themes resolve the same tokens, so a rebrand is a value change rather
+              than a component change.
+            </Callout>
           </Section>
 
           <Section id="admin-inspector" kicker="2.3" title="Inspector & CLI runbooks">

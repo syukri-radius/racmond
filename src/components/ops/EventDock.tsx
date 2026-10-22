@@ -26,7 +26,7 @@ export const EventDock = memo(function EventDock() {
   const unacknowledged = useMemo(() => events.filter((event) => !event.acknowledged).length, [events]);
 
   return (
-    <section className="z-10 flex shrink-0 flex-col border-t border-line bg-ink-900/90">
+    <section className="glass-bar z-10 flex shrink-0 flex-col border-t border-line">
       <header className="flex h-8 shrink-0 items-center gap-2 border-b border-line-soft px-2.5">
         <Icon name="activity" size={12} className="text-ice" />
         <div className="flex gap-px">
@@ -37,7 +37,7 @@ export const EventDock = memo(function EventDock() {
               onClick={() => setTab(entry.id)}
               className={cn(
                 "px-2 py-[3px] font-mono text-[9px] uppercase tracking-[0.16em] transition",
-                tab === entry.id ? "bg-ink-800 text-ice" : "text-slate-600 hover:text-slate-300",
+                tab === entry.id ? "bg-slate-100/[0.06] text-ice" : "text-slate-600 hover:text-slate-300",
               )}
             >
               {entry.label}

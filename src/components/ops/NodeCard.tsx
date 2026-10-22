@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, type CSSProperties } from "react";
 import type { MetricSnapshot, NodeStatus, NodeType, TopologyNode } from "@/lib/types";
 import { GAUGE_STRIP_TYPES, NODE_LABEL } from "@/lib/types";
 import { formatCompact, metricTone, NODE_TYPE_ABBREV, STATUS_TONE } from "@/lib/graph";
@@ -17,24 +17,24 @@ interface TypeMeta {
 }
 
 const TYPE_META: Record<NodeType, TypeMeta> = {
-  organization: { icon: "org", accent: "#a78bfa", badge: "text-violet-300", tint: "rgba(167,139,250,0.07)" },
-  sub_org: { icon: "division", accent: "#8b9cf7", badge: "text-indigo-300", tint: "rgba(139,156,247,0.06)" },
-  project: { icon: "project", accent: "#7dd3fc", badge: "text-sky-300", tint: "rgba(125,211,252,0.06)" },
-  sub_project: { icon: "tree", accent: "#67c8f0", badge: "text-sky-300", tint: "rgba(103,200,240,0.05)" },
-  datacenter: { icon: "datacenter", accent: "#5eead4", badge: "text-teal-300", tint: "rgba(94,234,212,0.05)" },
-  namespace: { icon: "namespace", accent: "#c4b5fd", badge: "text-violet-300", tint: "rgba(196,181,253,0.05)" },
-  server: { icon: "server", accent: "#93c5fd", badge: "text-blue-300", tint: "rgba(147,197,253,0.05)" },
-  container: { icon: "container", accent: "#7dd3fc", badge: "text-cyan-300", tint: "rgba(125,211,252,0.05)" },
-  pod: { icon: "pod", accent: "#a5b4fc", badge: "text-indigo-300", tint: "rgba(165,180,252,0.05)" },
-  service_group: { icon: "group", accent: "#6ee7b7", badge: "text-emerald-300", tint: "rgba(110,231,183,0.05)" },
-  service_sub_group: { icon: "group", accent: "#5fd6a8", badge: "text-emerald-300", tint: "rgba(95,214,168,0.045)" },
-  service: { icon: "service", accent: "#34d399", badge: "text-emerald-300", tint: "rgba(52,211,153,0.07)" },
-  endpoint: { icon: "endpoint", accent: "#fbbf24", badge: "text-amber-300", tint: "rgba(251,191,36,0.07)" },
-  resource: { icon: "cpu", accent: "#38bdf8", badge: "text-sky-300", tint: "rgba(56,189,248,0.08)" },
+  organization: { icon: "org", accent: "var(--type-org)", badge: "text-violet-300", tint: "color-mix(in srgb, var(--type-org) 12%, transparent)" },
+  sub_org: { icon: "division", accent: "var(--type-division)", badge: "text-indigo-300", tint: "color-mix(in srgb, var(--type-division) 10%, transparent)" },
+  project: { icon: "project", accent: "var(--type-project)", badge: "text-sky-300", tint: "color-mix(in srgb, var(--type-project) 10%, transparent)" },
+  sub_project: { icon: "tree", accent: "var(--type-subproject)", badge: "text-sky-300", tint: "color-mix(in srgb, var(--type-subproject) 9%, transparent)" },
+  datacenter: { icon: "datacenter", accent: "var(--type-datacenter)", badge: "text-teal-300", tint: "color-mix(in srgb, var(--type-datacenter) 9%, transparent)" },
+  namespace: { icon: "namespace", accent: "var(--type-namespace)", badge: "text-violet-300", tint: "color-mix(in srgb, var(--type-namespace) 9%, transparent)" },
+  server: { icon: "server", accent: "var(--type-server)", badge: "text-blue-300", tint: "color-mix(in srgb, var(--type-server) 9%, transparent)" },
+  container: { icon: "container", accent: "var(--type-container)", badge: "text-cyan-300", tint: "color-mix(in srgb, var(--type-container) 9%, transparent)" },
+  pod: { icon: "pod", accent: "var(--type-pod)", badge: "text-indigo-300", tint: "color-mix(in srgb, var(--type-pod) 9%, transparent)" },
+  service_group: { icon: "group", accent: "var(--type-group)", badge: "text-emerald-300", tint: "color-mix(in srgb, var(--type-group) 9%, transparent)" },
+  service_sub_group: { icon: "group", accent: "var(--type-group-sub)", badge: "text-emerald-300", tint: "color-mix(in srgb, var(--type-group-sub) 8%, transparent)" },
+  service: { icon: "service", accent: "var(--type-service)", badge: "text-emerald-300", tint: "color-mix(in srgb, var(--type-service) 11%, transparent)" },
+  endpoint: { icon: "endpoint", accent: "var(--type-endpoint)", badge: "text-amber-300", tint: "color-mix(in srgb, var(--type-endpoint) 11%, transparent)" },
+  resource: { icon: "cpu", accent: "var(--type-resource)", badge: "text-sky-300", tint: "color-mix(in srgb, var(--type-resource) 12%, transparent)" },
 };
 
 function borderFor(status: NodeStatus, selected: boolean, matched: boolean) {
-  if (selected) return "border-ice/70 shadow-[0_0_0_1px_rgba(125,211,252,0.35),0_18px_40px_-24px_rgba(56,189,248,0.8)]";
+  if (selected) return "border-ice/70 shadow-[0_0_0_1px_var(--accent-strong),0_22px_48px_-26px_var(--accent-deep)]";
   if (matched) return "border-violet-400/60";
   switch (status) {
     case "critical":
@@ -98,20 +98,20 @@ export const NodeCard = memo(function NodeCard({
   return (
     <div
       className={cn(
-        "absolute inset-0 overflow-hidden rounded-lg border backdrop-blur-[1px] transition-[border-color,box-shadow,opacity] duration-200",
+        "node-surface absolute inset-0 overflow-hidden rounded-xl border transition-[border-color,box-shadow,opacity] duration-200",
         borderFor(node.status, selected, matched),
         dimmed && "opacity-25 saturate-50",
         dragging && "cursor-grabbing",
         node.status === "critical" && !dimmed && "pulse-critical",
       )}
-      style={{
-        background: isGroup
-          ? `linear-gradient(180deg, ${meta.tint} 0%, rgba(7,11,19,0.55) ${Math.min(60, box.header + 8)}%, rgba(7,11,19,0.28) 100%)`
-          : `linear-gradient(160deg, ${meta.tint} 0%, rgba(8,12,20,0.92) 100%)`,
-      }}
+      data-group={isGroup ? "true" : "false"}
+      style={{ "--tint": meta.tint } as CSSProperties}
       title={`${NODE_LABEL[node.type]} · ${node.name}`}
     >
-      <span className="absolute left-0 top-0 h-full w-[3px]" style={{ background: meta.accent, opacity: 0.75 }} />
+      <span
+        className="absolute left-0 top-0 h-full w-[3px] opacity-80"
+        style={{ background: `linear-gradient(180deg, ${meta.accent}, transparent 92%)` }}
+      />
 
       {node.type === "resource" ? (
         <ResourceBody node={node} metric={metric} series={series} />

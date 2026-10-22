@@ -34,7 +34,7 @@ export function OpsDashboard({ initial }: { initial?: TopologyPayload | null }) 
   }, []);
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-ink-950">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-transparent">
       <TopBar />
       <div className="flex min-h-0 flex-1">
         <SideRail />
@@ -42,7 +42,7 @@ export function OpsDashboard({ initial }: { initial?: TopologyPayload | null }) 
           <div className="relative min-h-0 flex-1">
             <Canvas />
             {phase === "error" ? (
-              <div className="absolute inset-x-0 top-3 z-20 mx-auto w-fit rounded border border-rose-500/40 bg-rose-500/10 px-3 py-1.5 font-mono text-[10px] text-rose-200">
+              <div className="glass-chip absolute inset-x-0 top-3 z-20 mx-auto w-fit rounded border border-rose-500/40 bg-rose-500/10 px-3 py-1.5 font-mono text-[10px] text-rose-300">
                 {error ?? "topology unavailable"} — retry with the reseed control
               </div>
             ) : null}

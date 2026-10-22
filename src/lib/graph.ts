@@ -171,10 +171,14 @@ export const STATUS_TONE: Record<NodeStatus, { dot: string; text: string; ring: 
   maintenance: { dot: "bg-sky-400", text: "text-sky-300", ring: "ring-sky-400/30", glow: "", label: "Maintenance" },
 };
 
+/**
+ * Gauge / sparkline tones. The stroke colours are CSS variables so the same
+ * value stays legible on the dark and the light theme.
+ */
 export function metricTone(value: number): { stroke: string; text: string; bar: string } {
-  if (value >= 90) return { stroke: "#f43f5e", text: "text-rose-300", bar: "bg-rose-500" };
-  if (value >= 75) return { stroke: "#fbbf24", text: "text-amber-300", bar: "bg-amber-400" };
-  return { stroke: "#34d399", text: "text-emerald-300", bar: "bg-emerald-400" };
+  if (value >= 90) return { stroke: "var(--metric-danger)", text: "text-rose-300", bar: "bg-rose-500" };
+  if (value >= 75) return { stroke: "var(--metric-warn)", text: "text-amber-300", bar: "bg-amber-400" };
+  return { stroke: "var(--metric-ok)", text: "text-emerald-300", bar: "bg-emerald-400" };
 }
 
 export function formatNumber(value: number, digits = 1): string {

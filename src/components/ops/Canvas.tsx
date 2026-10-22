@@ -193,23 +193,23 @@ export function Canvas() {
 
       {/* canvas chrome */}
       <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2">
-        <span className="pointer-events-auto flex items-center gap-1.5 rounded border border-line bg-ink-900/90 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-slate-400">
+        <span className="glass-chip pointer-events-auto flex items-center gap-1.5 rounded border border-line px-2 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-slate-400">
           <Icon name="network" size={11} className="text-ice" />
           elk layered · {direction}
           <span className="text-slate-600">|</span>
           {layout ? `${layout.visibleCount} nodes · ${layout.elapsedMs}ms` : computing ? "computing…" : "idle"}
         </span>
         {computing ? (
-          <span className="relative h-[3px] w-24 overflow-hidden rounded-full bg-ink-800 sweep" />
+          <span className="relative h-[3px] w-24 overflow-hidden rounded-full bg-[var(--gauge-track)] sweep" />
         ) : null}
       </div>
 
       <div className="absolute bottom-3 right-3 flex flex-col items-end gap-2">
-        <div className="flex overflow-hidden rounded-md border border-line bg-ink-900/92">
+        <div className="glass-chip flex overflow-hidden rounded-md border border-line">
           <button
             type="button"
             onClick={() => zoomBy(1 / 1.25)}
-            className="flex h-7 w-7 items-center justify-center text-slate-400 transition hover:bg-ink-750 hover:text-ice"
+            className="flex h-7 w-7 items-center justify-center text-slate-400 transition hover:bg-slate-100/[0.07] hover:text-ice"
             title="Zoom out"
           >
             <Icon name="zoomOut" size={13} />
@@ -220,7 +220,7 @@ export function Canvas() {
           <button
             type="button"
             onClick={() => zoomBy(1.25)}
-            className="flex h-7 w-7 items-center justify-center text-slate-400 transition hover:bg-ink-750 hover:text-ice"
+            className="flex h-7 w-7 items-center justify-center text-slate-400 transition hover:bg-slate-100/[0.07] hover:text-ice"
             title="Zoom in"
           >
             <Icon name="zoomIn" size={13} />
@@ -228,7 +228,7 @@ export function Canvas() {
           <button
             type="button"
             onClick={() => useOps.getState().requestFit()}
-            className="flex h-7 w-7 items-center justify-center border-l border-line text-slate-400 transition hover:bg-ink-750 hover:text-ice"
+            className="flex h-7 w-7 items-center justify-center border-l border-line text-slate-400 transition hover:bg-slate-100/[0.07] hover:text-ice"
             title="Fit hierarchy to view"
           >
             <Icon name="fit" size={13} />
@@ -242,9 +242,9 @@ export function Canvas() {
       </div>
 
       {phase !== "ready" ? (
-        <div className="absolute inset-0 flex items-center justify-center bg-ink-950/70">
+        <div className="absolute inset-0 flex items-center justify-center bg-ink-950/70 backdrop-blur-[2px]">
           <div className="flex flex-col items-center gap-2">
-            <span className="relative h-[3px] w-40 overflow-hidden rounded-full bg-ink-800 sweep" />
+            <span className="relative h-[3px] w-40 overflow-hidden rounded-full bg-[var(--gauge-track)] sweep" />
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
               {phase === "error" ? "topology unavailable" : "loading topology"}
             </span>
@@ -408,11 +408,11 @@ const ParentLink = memo(function ParentLink({
   const midY = anchorY / 2;
   const targetX = width / 2;
   const stroke =
-    status === "critical" ? "rgba(244,63,94,0.55)" : status === "degraded" ? "rgba(251,191,36,0.4)" : "rgba(125,211,252,0.22)";
+    status === "critical" ? "var(--link-critical)" : status === "degraded" ? "var(--link-degraded)" : "var(--link-default)";
   return (
     <svg className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-visible">
-      <path d={`M ${anchorX} ${anchorY} L ${anchorX} ${midY} L ${targetX} ${midY} L ${targetX} 0`} fill="none" stroke={stroke} strokeWidth="1" />
-      <circle cx={targetX} cy={0} r="1.8" fill={stroke} />
+      <path d={`M ${anchorX} ${anchorY} L ${anchorX} ${midY} L ${targetX} ${midY} L ${targetX} 0`} fill="none" style={{ stroke }} strokeWidth="1" />
+      <circle cx={targetX} cy={0} r="1.8" style={{ fill: stroke }} />
     </svg>
   );
 });

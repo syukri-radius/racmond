@@ -55,7 +55,7 @@ export const ArcGauge = memo(function ArcGauge({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="#16222f"
+            className="[stroke:var(--gauge-track)]"
             strokeWidth={stroke}
             strokeDasharray={`${arc} ${circumference}`}
             strokeLinecap="round"
@@ -65,11 +65,10 @@ export const ArcGauge = memo(function ArcGauge({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke={tone.stroke}
             strokeWidth={stroke}
             strokeDasharray={`${filled} ${circumference}`}
             strokeLinecap="round"
-            style={{ transition: "stroke-dasharray 700ms cubic-bezier(0.4,0,0.2,1), stroke 400ms linear" }}
+            style={{ stroke: tone.stroke, transition: "stroke-dasharray 700ms cubic-bezier(0.4,0,0.2,1), stroke 400ms linear" }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -110,17 +109,23 @@ export const Sparkline = memo(function Sparkline({
     const y = height - (Math.max(0, Math.min(max, v)) / max) * (height - 3) - 1.5;
     return `${(i * step).toFixed(2)},${y.toFixed(2)}`;
   });
-  const id = `spark-${stroke.replace("#", "")}-${height}`;
+  const id = `spark-${stroke.replace(/[^a-zA-Z0-9]/g, "")}-${height}`;
   return (
     <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="overflow-visible">
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={stroke} stopOpacity="0.35" />
-          <stop offset="100%" stopColor={stroke} stopOpacity="0" />
+          <stop offset="0%" style={{ stopColor: stroke, stopOpacity: 0.35 }} />
+          <stop offset="100%" style={{ stopColor: stroke, stopOpacity: 0 }} />
         </linearGradient>
       </defs>
       {fill ? <polygon points={`0,${height} ${points.join(" ")} ${width},${height}`} fill={`url(#${id})`} /> : null}
-      <polyline points={points.join(" ")} fill="none" stroke={stroke} strokeWidth="1.4" vectorEffect="non-scaling-stroke" />
+      <polyline
+        points={points.join(" ")}
+        fill="none"
+        strokeWidth="1.4"
+        vectorEffect="non-scaling-stroke"
+        style={{ stroke }}
+      />
     </svg>
   );
 });
@@ -139,7 +144,7 @@ export const MiniBar = memo(function MiniBar({
   return (
     <div className="flex items-center gap-1" style={{ width }}>
       <span className="font-mono text-[8px] uppercase tracking-wider text-slate-500">{label}</span>
-      <span className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-ink-750">
+      <span className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--gauge-track)]">
         <span
           className={`absolute inset-y-0 left-0 rounded-full ${tone.bar}`}
           style={{ width: `${clamped}%`, transition: "width 700ms cubic-bezier(0.4,0,0.2,1)" }}
@@ -159,7 +164,7 @@ export function Chip({
   className?: string;
 }) {
   const tones: Record<string, string> = {
-    slate: "border-line bg-ink-800/80 text-slate-400",
+    slate: "border-line bg-slate-100/[0.03] text-slate-400",
     mint: "border-emerald-500/25 bg-emerald-500/10 text-emerald-300",
     amber: "border-amber-500/25 bg-amber-500/10 text-amber-300",
     rose: "border-rose-500/25 bg-rose-500/10 text-rose-300",
@@ -191,7 +196,7 @@ export function Panel({
   bodyClassName?: string;
 }) {
   return (
-    <section className={`flex min-h-0 flex-col rounded-lg border border-line bg-ink-900/85 backdrop-blur-sm ${className}`}>
+    <section className={`glass-card flex min-h-0 flex-col rounded-xl border border-line ${className}`}>
       {title ? (
         <header className="flex h-8 shrink-0 items-center justify-between gap-2 border-b border-line-soft px-2.5">
           <div className="flex items-center gap-1.5 text-slate-400">
@@ -220,7 +225,7 @@ export function StatTile({
   hint?: string;
 }) {
   return (
-    <div className="flex min-w-[74px] flex-col justify-center rounded-md border border-line-soft bg-ink-850/70 px-2 py-1">
+    <div className="glass-inset flex min-w-[74px] flex-col justify-center rounded-md border border-line-soft px-2 py-1">
       <span className="font-mono text-[8.5px] uppercase tracking-[0.16em] text-slate-500">{label}</span>
       <span className={`tabular font-mono text-[15px] font-semibold leading-tight ${tone}`}>
         {value}

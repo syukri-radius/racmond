@@ -23,7 +23,7 @@ export const Inspector = memo(function Inspector() {
   const setTab = useOps((s) => s.setInspectorTab);
 
   return (
-    <aside className="flex w-[336px] shrink-0 flex-col border-l border-line bg-ink-900/80">
+    <aside className="glass-panel flex w-[336px] shrink-0 flex-col border-l border-line">
       <header className="flex h-8 shrink-0 items-center gap-1.5 border-b border-line-soft px-2.5">
         <Icon name="target" size={12} className="text-ice" />
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-400">node inspector</span>
@@ -41,7 +41,7 @@ export const Inspector = memo(function Inspector() {
       ) : (
         <>
           <InspectorHeader node={node} />
-          <nav className="flex shrink-0 gap-px border-b border-line-soft bg-ink-950/40 px-1">
+          <nav className="flex shrink-0 gap-px border-b border-line-soft bg-slate-100/[0.02] px-1">
             {TABS.map((entry) => (
               <button
                 key={entry.id}
@@ -78,7 +78,7 @@ function InspectorHeader({ node }: { node: TopologyNode }) {
   const tone = STATUS_TONE[node.status];
 
   return (
-    <div className="shrink-0 border-b border-line-soft bg-ink-850/50 px-2.5 py-2">
+    <div className="shrink-0 border-b border-line-soft bg-slate-100/[0.02] px-2.5 py-2">
       <div className="flex items-center gap-1 overflow-x-auto scroll-thin pb-1 font-mono text-[8.5px] uppercase tracking-[0.1em] text-slate-600">
         {chain.map((ancestor, index) => (
           <span key={ancestor.id} className="flex shrink-0 items-center gap-1">
@@ -127,7 +127,7 @@ function Action({ icon, label, onClick }: { icon: Parameters<typeof Icon>[0]["na
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-1 rounded border border-line bg-ink-850 px-1.5 py-[3px] font-mono text-[8.5px] uppercase tracking-[0.1em] text-slate-500 transition hover:border-ice/40 hover:text-ice"
+      className="glass-inset flex items-center gap-1 rounded border border-line px-1.5 py-[3px] font-mono text-[8.5px] uppercase tracking-[0.1em] text-slate-500 transition hover:border-ice/40 hover:text-ice"
     >
       <Icon name={icon} size={10} />
       {label}
@@ -170,7 +170,7 @@ function OverviewTab({ node }: { node: TopologyNode }) {
 
   return (
     <div className="flex flex-col gap-2.5 p-2.5">
-      <section className="rounded-md border border-line-soft bg-ink-850/60 p-2">
+      <section className="glass-inset rounded-lg border border-line-soft p-2">
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
             <ArcGauge value={metric?.cpu ?? 0} label="cpu" icon="cpu" size={54} />

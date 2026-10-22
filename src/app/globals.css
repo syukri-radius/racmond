@@ -1,66 +1,419 @@
 @import "tailwindcss";
 
-@theme {
-  --color-ink-950: #04060c;
-  --color-ink-900: #070b13;
-  --color-ink-850: #0a101b;
-  --color-ink-800: #0f1725;
-  --color-ink-750: #14202f;
-  --color-ink-700: #1b2939;
-  --color-line: #1e2c3e;
-  --color-line-soft: #16212f;
-  --color-mint: #34d399;
+/* =========================================================================
+   RACMOND · HELIOS OPS — THEME SYSTEM
+   -------------------------------------------------------------------------
+   Two themes (dark / light), both built on a purple base. Every surface,
+   border, text tone and accent is a CSS custom property so switching
+   `data-theme` on <html> re-skins the whole dashboard without a repaint
+   penalty and without duplicating Tailwind utilities.
+
+   Naming:
+     --ink-*     layered surfaces (page → panel → inset)
+     --fg-*      adaptive neutral ramp exposed as `slate-*` utilities
+     --accent    primary interactive accent (purple)
+     --type-*    per node-type accent
+     --glass-*   glassmorphism recipe (fill, border, blur, shadow)
+   ========================================================================= */
+
+@theme inline {
+  --color-ink-950: var(--ink-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-850: var(--ink-850);
+  --color-ink-800: var(--ink-800);
+  --color-ink-750: var(--ink-750);
+  --color-ink-700: var(--ink-700);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+
+  --color-ice: var(--accent);
+  --color-mint: var(--mint);
   --color-signal-amber: #fbbf24;
   --color-signal-rose: #fb7185;
-  --color-ice: #7dd3fc;
   --color-violet-signal: #a78bfa;
+
+  /* adaptive neutral ramp — the app was written against the slate scale,
+     so the scale itself becomes theme aware (inverted in light mode). */
+  --color-slate-50: var(--fg-50);
+  --color-slate-100: var(--fg-100);
+  --color-slate-200: var(--fg-200);
+  --color-slate-300: var(--fg-300);
+  --color-slate-400: var(--fg-400);
+  --color-slate-500: var(--fg-500);
+  --color-slate-600: var(--fg-600);
+  --color-slate-700: var(--fg-700);
+
+  /* status accents that are used as *text* need darker steps on light */
+  --color-emerald-200: var(--emerald-200);
+  --color-emerald-300: var(--emerald-300);
+  --color-emerald-400: var(--emerald-400);
+  --color-amber-200: var(--amber-200);
+  --color-amber-300: var(--amber-300);
+  --color-amber-400: var(--amber-400);
+  --color-rose-200: var(--rose-200);
+  --color-rose-300: var(--rose-300);
+  --color-rose-400: var(--rose-400);
+  --color-sky-200: var(--sky-200);
+  --color-sky-300: var(--sky-300);
+  --color-sky-400: var(--sky-400);
+  --color-violet-200: var(--violet-200);
+  --color-violet-300: var(--violet-300);
+  --color-violet-400: var(--violet-400);
+  --color-indigo-300: var(--indigo-300);
+  --color-teal-300: var(--teal-300);
+  --color-cyan-300: var(--cyan-300);
+  --color-blue-300: var(--blue-300);
+
   --font-sans: ui-sans-serif, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
+/* ------------------------------------------------------------------ dark */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink-950: #08040f;
+  --ink-900: #0d0819;
+  --ink-850: #130c24;
+  --ink-800: #19112f;
+  --ink-750: #20163d;
+  --ink-700: #291c4c;
+  --line: rgba(176, 146, 255, 0.16);
+  --line-soft: rgba(176, 146, 255, 0.08);
+
+  --fg-50: #faf7ff;
+  --fg-100: #f2ecfd;
+  --fg-200: #e2d8f8;
+  --fg-300: #c8b9e3;
+  --fg-400: #a794c6;
+  --fg-500: #82719f;
+  --fg-600: #64537f;
+  --fg-700: #4c3d66;
+
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --rose-200: #fecdd3;
+  --rose-300: #fda4af;
+  --rose-400: #fb7185;
+  --sky-200: #bae6fd;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --violet-200: #ddd6fe;
+  --violet-300: #c4b5fd;
+  --violet-400: #a78bfa;
+  --indigo-300: #a5b4fc;
+  --teal-300: #5eead4;
+  --cyan-300: #67e8f9;
+  --blue-300: #93c5fd;
+
+  --mint: #34d399;
+  --accent: #c4b5fd;
+  --accent-strong: #a78bfa;
+  --accent-deep: #7c3aed;
+  --accent-contrast: #160c28;
+
+  /* page */
+  --page-bg: #07030e;
+  --page-glow-a: rgba(139, 92, 246, 0.26);
+  --page-glow-b: rgba(217, 70, 239, 0.16);
+  --page-glow-c: rgba(99, 102, 241, 0.22);
+
+  /* glass */
+  --glass-blur: 22px;
+  --glass-bg: rgba(21, 13, 38, 0.55);
+  --glass-bg-strong: rgba(13, 8, 25, 0.72);
+  --glass-inset: rgba(32, 22, 61, 0.45);
+  --glass-border: rgba(196, 181, 253, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 24px 60px -34px rgba(2, 0, 10, 0.92), 0 2px 10px -6px rgba(2, 0, 10, 0.8);
+  --glass-node-shadow: 0 18px 44px -30px rgba(0, 0, 0, 0.95);
+
+  --node-fill: rgba(12, 7, 23, 0.78);
+  --node-fill-soft: rgba(10, 6, 20, 0.5);
+  --gauge-track: rgba(196, 181, 253, 0.14);
+  --metric-ok: #34d399;
+  --metric-warn: #fbbf24;
+  --metric-danger: #f43f5e;
+  --grid-line: rgba(176, 146, 255, 0.07);
+  --grid-line-strong: rgba(176, 146, 255, 0.11);
+  --scroll-thumb: rgba(167, 139, 250, 0.32);
+  --link-default: rgba(196, 181, 253, 0.26);
+  --link-critical: rgba(244, 63, 94, 0.55);
+  --link-degraded: rgba(251, 191, 36, 0.42);
+  --sweep: rgba(196, 181, 253, 0.26);
+
+  /* node type accents */
+  --type-org: #a78bfa;
+  --type-division: #8b9cf7;
+  --type-project: #7dd3fc;
+  --type-subproject: #67c8f0;
+  --type-datacenter: #5eead4;
+  --type-namespace: #c4b5fd;
+  --type-server: #93c5fd;
+  --type-container: #7dd3fc;
+  --type-pod: #a5b4fc;
+  --type-group: #6ee7b7;
+  --type-group-sub: #5fd6a8;
+  --type-service: #34d399;
+  --type-endpoint: #fbbf24;
+  --type-resource: #38bdf8;
+
+  --logo-primary: #c4b5fd;
+  --logo-secondary: #34d399;
+  --logo-tertiary: #e879f9;
+}
+
+/* ----------------------------------------------------------------- light */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --ink-950: #f7f3ff;
+  --ink-900: #fdfbff;
+  --ink-850: #f3ecff;
+  --ink-800: #ece2fd;
+  --ink-750: #e2d5f9;
+  --ink-700: #d5c5f4;
+  --line: rgba(109, 40, 217, 0.18);
+  --line-soft: rgba(109, 40, 217, 0.1);
+
+  --fg-50: #0d0617;
+  --fg-100: #1a1029;
+  --fg-200: #2a1b3f;
+  --fg-300: #40304f;
+  --fg-400: #5c4a72;
+  --fg-500: #6f5b87;
+  --fg-600: #7d6a95;
+  --fg-700: #a698b8;
+
+  --emerald-200: #065f46;
+  --emerald-300: #047857;
+  --emerald-400: #059669;
+  --amber-200: #92400e;
+  --amber-300: #b45309;
+  --amber-400: #d97706;
+  --rose-200: #9f1239;
+  --rose-300: #be123c;
+  --rose-400: #e11d48;
+  --sky-200: #075985;
+  --sky-300: #0369a1;
+  --sky-400: #0284c7;
+  --violet-200: #5b21b6;
+  --violet-300: #6d28d9;
+  --violet-400: #7c3aed;
+  --indigo-300: #4338ca;
+  --teal-300: #0f766e;
+  --cyan-300: #0e7490;
+  --blue-300: #1d4ed8;
+
+  --mint: #059669;
+  --accent: #6d28d9;
+  --accent-strong: #5b21b6;
+  --accent-deep: #4c1d95;
+  --accent-contrast: #fbf9ff;
+
+  --page-bg: #f6f1ff;
+  --page-glow-a: rgba(167, 139, 250, 0.42);
+  --page-glow-b: rgba(232, 121, 249, 0.24);
+  --page-glow-c: rgba(129, 140, 248, 0.3);
+
+  --glass-blur: 22px;
+  --glass-bg: rgba(255, 255, 255, 0.64);
+  --glass-bg-strong: rgba(255, 255, 255, 0.8);
+  --glass-inset: rgba(255, 255, 255, 0.58);
+  --glass-border: rgba(109, 40, 217, 0.16);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --glass-shadow: 0 24px 54px -34px rgba(76, 29, 149, 0.42), 0 2px 10px -6px rgba(76, 29, 149, 0.16);
+  --glass-node-shadow: 0 18px 38px -28px rgba(76, 29, 149, 0.38);
+
+  --node-fill: rgba(255, 255, 255, 0.74);
+  --node-fill-soft: rgba(255, 255, 255, 0.5);
+  --gauge-track: rgba(109, 40, 217, 0.14);
+  --metric-ok: #059669;
+  --metric-warn: #d97706;
+  --metric-danger: #e11d48;
+  --grid-line: rgba(109, 40, 217, 0.09);
+  --grid-line-strong: rgba(109, 40, 217, 0.13);
+  --scroll-thumb: rgba(109, 40, 217, 0.3);
+  --link-default: rgba(109, 40, 217, 0.24);
+  --link-critical: rgba(225, 29, 72, 0.5);
+  --link-degraded: rgba(217, 119, 6, 0.45);
+  --sweep: rgba(109, 40, 217, 0.2);
+
+  --type-org: #7c3aed;
+  --type-division: #4f46e5;
+  --type-project: #0284c7;
+  --type-subproject: #0891b2;
+  --type-datacenter: #0d9488;
+  --type-namespace: #8b5cf6;
+  --type-server: #2563eb;
+  --type-container: #0891b2;
+  --type-pod: #4f46e5;
+  --type-group: #059669;
+  --type-group-sub: #0d9488;
+  --type-service: #10b981;
+  --type-endpoint: #d97706;
+  --type-resource: #0284c7;
+
+  --logo-primary: #6d28d9;
+  --logo-secondary: #059669;
+  --logo-tertiary: #c026d3;
+}
+
+/* ------------------------------------------------------------------ base */
 html,
 body {
   height: 100%;
 }
 
+html {
+  background-color: var(--page-bg);
+}
+
 body {
   margin: 0;
-  background-color: #04060c;
+  background-color: var(--page-bg);
   background-image:
-    radial-gradient(1200px 620px at 12% -10%, rgba(56, 189, 248, 0.09), transparent 62%),
-    radial-gradient(900px 520px at 96% 4%, rgba(167, 139, 250, 0.08), transparent 60%),
-    radial-gradient(700px 500px at 50% 120%, rgba(52, 211, 153, 0.06), transparent 65%);
-  color: #dbe4f0;
+    radial-gradient(1100px 620px at 8% -12%, var(--page-glow-a), transparent 62%),
+    radial-gradient(880px 540px at 98% 0%, var(--page-glow-b), transparent 60%),
+    radial-gradient(1000px 700px at 52% 118%, var(--page-glow-c), transparent 64%);
+  background-attachment: fixed;
+  color: var(--fg-200);
   font-family: var(--font-sans);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 260ms ease, color 260ms ease;
 }
 
+::selection {
+  background: color-mix(in srgb, var(--accent) 32%, transparent);
+  color: var(--fg-50);
+}
+
+:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------- texture */
 .canvas-grid {
   background-image:
-    linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-    linear-gradient(to right, rgba(148, 163, 184, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: 140px 140px, 140px 140px, 28px 28px, 28px 28px;
 }
 
+/* ----------------------------------------------------------------- glass */
+@layer components {
+  .glass,
+  .glass-panel,
+  .glass-bar,
+  .glass-card,
+  .glass-chip,
+  .glass-inset {
+    background-color: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    transition: background-color 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+  }
+
+  .glass-panel {
+    background-image: linear-gradient(160deg, var(--glass-highlight) 0%, transparent 42%);
+    border-color: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-bar {
+    background-color: var(--glass-bg-strong);
+    background-image: linear-gradient(180deg, var(--glass-highlight) 0%, transparent 60%);
+    border-color: var(--glass-border);
+  }
+
+  .glass-card {
+    background-image: linear-gradient(155deg, var(--glass-highlight) 0%, transparent 46%);
+    border-color: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-chip {
+    background-color: var(--glass-bg-strong);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
+    border-color: var(--glass-border);
+    box-shadow: 0 12px 30px -22px rgba(0, 0, 0, 0.65), inset 0 1px 0 var(--glass-highlight);
+  }
+
+  .glass-inset {
+    background-color: var(--glass-inset);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: blur(10px) saturate(140%);
+    border-color: var(--line-soft);
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* Node cards in the sub-flow canvas.
+     Deliberately *no* backdrop-filter here: a 450-node estate would otherwise
+     spin up hundreds of blur layers and stall the compositor. The glass read
+     comes from the tint gradient, translucency, 1px lavender border, inner
+     highlight and long soft shadow — panels keep the real blur. */
+  .node-surface {
+    transition: background-color 260ms ease, border-color 200ms ease, box-shadow 260ms ease, opacity 200ms ease;
+    background-image: linear-gradient(180deg, var(--tint, transparent) 0%, var(--node-fill) 46%, var(--node-fill-soft) 100%);
+    box-shadow: var(--glass-node-shadow), inset 0 1px 0 var(--glass-highlight);
+  }
+
+  .node-surface[data-group="true"] {
+    background-image: linear-gradient(180deg, var(--tint, transparent) 0%, var(--node-fill) 24%, var(--node-fill-soft) 100%);
+    box-shadow: var(--glass-node-shadow), inset 0 1px 0 var(--glass-highlight);
+  }
+
+  .theme-toggle {
+    transition: box-shadow 220ms ease, border-color 220ms ease, color 220ms ease, background-color 220ms ease;
+  }
+}
+
+/* theme-aware toggle slots (CSS driven so they are right before hydration) */
+.theme-sun,
+.theme-label-light {
+  display: none;
+}
+[data-theme="light"] .theme-sun {
+  display: block;
+}
+[data-theme="light"] .theme-moon {
+  display: none;
+}
+[data-theme="light"] .theme-label-light {
+  display: inline;
+}
+[data-theme="light"] .theme-label-dark {
+  display: none;
+}
+
+/* -------------------------------------------------------------- scrollbar */
 .scroll-thin {
   scrollbar-width: thin;
-  scrollbar-color: #24384c transparent;
+  scrollbar-color: var(--scroll-thumb) transparent;
 }
 .scroll-thin::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: #22344a;
+  background: var(--scroll-thumb);
   border-radius: 99px;
 }
 .scroll-thin::-webkit-scrollbar-track {
   background: transparent;
 }
 
+/* ------------------------------------------------------------- animations */
 @keyframes pulse-ring {
   0% {
     box-shadow: 0 0 0 0 rgba(251, 113, 133, 0.5);
@@ -101,8 +454,23 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, 0.22), transparent);
+  background: linear-gradient(90deg, transparent, var(--sweep), transparent);
   animation: sweep 2.6s linear infinite;
+}
+
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate3d(3%, -2%, 0) scale(1.08);
+    opacity: 1;
+  }
+}
+.aurora-orb {
+  animation: aurora-drift 18s ease-in-out infinite;
 }
 
 .tabular {
@@ -112,4 +480,16 @@ body {
 .no-select {
   user-select: none;
   -webkit-user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-orb,
+  .blink,
+  .pulse-critical,
+  .sweep::after {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
 }

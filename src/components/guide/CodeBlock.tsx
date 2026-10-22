@@ -24,7 +24,7 @@ export function CodeBlock({
   };
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-[#05080f]">
+    <div className="glass-card overflow-hidden rounded-xl border border-line bg-ink-950/70">
       <div className="flex items-center gap-2 border-b border-line-soft px-3 py-1.5">
         <span className="flex gap-1">
           <span className="h-2 w-2 rounded-full bg-rose-500/70" />

@@ -6,6 +6,7 @@ import { tally, timeAgo } from "@/lib/graph";
 import { cn } from "@/lib/cn";
 import { Icon } from "@/components/ops/icons";
 import { StatTile } from "@/components/ops/primitives";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const DEPTH_LEVELS = [
   { depth: 1, label: "ORG" },
@@ -52,14 +53,14 @@ export const TopBar = memo(function TopBar() {
   void clock;
 
   return (
-    <header className="z-20 shrink-0 border-b border-line bg-ink-900/85 backdrop-blur">
+    <header className="glass-bar z-20 shrink-0 border-b border-line">
       <div className="flex items-center gap-3 px-3 py-2">
         <div className="flex items-center gap-2.5">
-          <span className="relative flex h-9 w-9 items-center justify-center rounded-md border border-ice/30 bg-ink-850">
-            <svg viewBox="0 0 32 32" className="h-5 w-5" fill="none" stroke="#7dd3fc" strokeWidth="1.5">
+          <span className="relative flex h-9 w-9 items-center justify-center rounded-md border border-ice/30 bg-[var(--glass-inset)] shadow-[inset_0_1px_0_var(--glass-highlight),0_0_22px_-10px_var(--accent-strong)]">
+            <svg viewBox="0 0 32 32" className="h-5 w-5 [stroke:var(--logo-primary)]" fill="none" strokeWidth="1.5">
               <path d="M16 3l11 6v14l-11 6-11-6V9l11-6z" strokeLinejoin="round" />
-              <path d="M16 11l5.5 3v6L16 23l-5.5-3v-6L16 11z" strokeLinejoin="round" stroke="#34d399" />
-              <path d="M16 3v8M27 9l-5.5 5M5 9l5.5 5M16 23v6M27 23l-5.5 0M5 23h5.5" stroke="#a78bfa" strokeOpacity="0.6" />
+              <path d="M16 11l5.5 3v6L16 23l-5.5-3v-6L16 11z" strokeLinejoin="round" className="[stroke:var(--logo-secondary)]" />
+              <path d="M16 3v8M27 9l-5.5 5M5 9l5.5 5M16 23v6M27 23l-5.5 0M5 23h5.5" strokeOpacity="0.65" className="[stroke:var(--logo-tertiary)]" />
             </svg>
           </span>
           <div className="leading-tight">
@@ -108,7 +109,7 @@ export const TopBar = memo(function TopBar() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="search nodes, regions, owners…"
-              className="h-8 w-56 rounded-md border border-line bg-ink-850 pl-7 pr-2 font-mono text-[10.5px] text-slate-200 placeholder:text-slate-600 focus:border-ice/50 focus:outline-none"
+              className="glass-inset h-8 w-56 rounded-md border border-line pl-7 pr-2 font-mono text-[10.5px] text-slate-200 placeholder:text-slate-600 focus:border-ice/50 focus:outline-none"
             />
           </label>
 
@@ -118,8 +119,8 @@ export const TopBar = memo(function TopBar() {
             className={cn(
               "flex h-8 items-center gap-1.5 rounded-md border px-2 font-mono text-[9.5px] uppercase tracking-[0.14em] transition",
               live
-                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-                : "border-line bg-ink-850 text-slate-400 hover:text-slate-200",
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300 shadow-[0_0_18px_-10px_var(--emerald-400)]"
+                : "border-line bg-transparent text-slate-400 hover:text-slate-200 hover:border-ice/35",
             )}
             title="Toggle the live monitoring stream"
           >
@@ -136,12 +137,14 @@ export const TopBar = memo(function TopBar() {
           <button
             type="button"
             onClick={() => void reseed()}
-            className="flex h-8 items-center gap-1.5 rounded-md border border-line bg-ink-850 px-2 font-mono text-[9.5px] uppercase tracking-[0.14em] text-slate-400 transition hover:border-ice/40 hover:text-ice"
+            className="flex h-8 items-center gap-1.5 rounded-md border border-line bg-transparent px-2 font-mono text-[9.5px] uppercase tracking-[0.14em] text-slate-400 transition hover:border-ice/40 hover:text-ice"
             title="Rebuild the reference dataset"
           >
             <Icon name="refresh" size={11} />
             reseed
           </button>
+
+          <ThemeToggle />
 
           <a
             href="/guide"
