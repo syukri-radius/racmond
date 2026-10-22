@@ -17,14 +17,14 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { href: "/", label: "Overview", icon: "home", hint: "engine · projects · recent runs" },
-  { href: "/containers", label: "Containers", icon: "box", hint: "containers · images · volumes · networks" },
-  { href: "/graph", label: "Topology", icon: "map", hint: "hierarchical estate map" },
-  { href: "/apm", label: "APM", icon: "activity", hint: "service map · traces · apdex" },
-  { href: "/workflows", label: "Workflows", icon: "workflow", hint: "automation builder" },
-  { href: "/jvm", label: "JVM", icon: "cpu", hint: "monitor · gc · threads · dumps" },
-  { href: "/config", label: "Config", icon: "file", hint: "compose · terraform · github" },
-  { href: "/cli", label: "CLI", icon: "terminal", hint: "local tooling" },
+  { href: "/dockflow", label: "Overview", icon: "home", hint: "engine · projects · recent runs" },
+  { href: "/dockflow/containers", label: "Containers", icon: "box", hint: "containers · images · volumes · networks" },
+  { href: "/dockflow/graph", label: "Topology", icon: "map", hint: "hierarchical estate map" },
+  { href: "/dockflow/apm", label: "APM", icon: "activity", hint: "service map · traces · apdex" },
+  { href: "/dockflow/workflows", label: "Workflows", icon: "workflow", hint: "automation builder" },
+  { href: "/dockflow/jvm", label: "JVM", icon: "cpu", hint: "monitor · gc · threads · dumps" },
+  { href: "/dockflow/config", label: "Config", icon: "file", hint: "compose · terraform · github" },
+  { href: "/dockflow/cli", label: "CLI", icon: "terminal", hint: "local tooling" },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -82,7 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <nav className="scroll-thin flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto p-2">
           {NAV.map((item) => {
-            const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+            const active = item.href === "/dockflow" ? pathname === "/dockflow" : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
@@ -126,7 +126,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex min-w-0 items-center gap-2">
             <span className="font-mono text-[9.5px] uppercase tracking-[0.3em] text-slate-500">racmond /</span>
             <span className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-slate-300">
-              {NAV.find((item) => (item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)))?.label ?? "console"}
+              {NAV.find((item) => (item.href === "/dockflow" ? pathname === "/dockflow" : pathname.startsWith(item.href)))?.label ?? "console"}
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-2">

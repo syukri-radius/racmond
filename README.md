@@ -1,6 +1,21 @@
+# RACMOND
+
+Two apps live in this repository and share nothing at runtime:
+
+| part | routes | store | notes |
+| --- | --- | --- | --- |
+| **HELIOS · Ops** (original) | `/`, `/guide`, `/api/topology`, `/api/stream`, `/api/ingest/*`, `/api/nodes/*`, `/api/events`, `/api/admin/reseed` | Postgres (`pg`, `src/db/ops.ts`, `src/db/ops-schema.ts`) | hierarchical control room with the SSE telemetry engine and ELK layout. Needs its Postgres database; if that is unreachable the root page explains the failure instead of showing an empty canvas. |
+| **DOCKFLOW console** (new) | `/dockflow`, `/dockflow/{containers,graph,apm,workflows,jvm,config,cli}` + `/api/engine/*`, `/api/apm/*`, `/api/workflows/*`, `/api/jvm/*`, `/api/cli/*`, `/api/config/*`, `/radion/api/apm/ingest` | libsql/SQLite (`src/db/index.ts`, `src/db/schema.ts`) | everything below in this file. No Postgres, no Docker daemon required. |
+
+The two stores are deliberately isolated: `src/db/ops.ts` + `src/db/ops-schema.ts` are the
+HELIOS/Postgres side, `src/db/index.ts` + `src/db/schema.ts` are the console/libsql side, so
+`drizzle-kit push` only ever touches the console schema.
+
+---
+
 # DOCKFLOW · local ops console
 
-A single-operator, localhost control room for Docker estates. It talks to a real
+A single-operator, localhost control room for Docker estates, mounted at `/dockflow`. It talks to a real
 Docker endpoint when one answers, and falls back to a fully functional in-memory
 **demo engine** when nothing does — every page keeps working, and the real error
 is preserved and shown.
@@ -11,7 +26,7 @@ No authentication, no users, no RBAC: run it on your laptop, open the browser.
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000
+npm run dev          # http://localhost:3000 (HELIOS) · /dockflow (console)
 npm run typecheck
 npm run build && npm start
 npm run db:push      # drizzle-kit push (schema and bootstrap DDL agree)
@@ -34,14 +49,14 @@ postgres URLs are ignored on purpose.
 
 | route | what it does |
 | --- | --- |
-| `/` | engine card with probe latency and warnings, busiest containers, prune actions, per-project start/restart/stop, APM snapshot, recent workflow runs, PATH scan |
-| `/containers` | containers / images / volumes / networks tabs, metric strip, filters, row actions, `docker run` form, drawer with overview, logs (250 lines, auto-refresh), stats sparklines and exec |
-| `/graph` | hierarchical estate map: host → compose project → service → container → networks/mounts, plus the engine resource branch. Expand/collapse pills, expand-all / collapse / fit, `X/Y visible` |
-| `/apm` | service map (call-flow and hierarchy views), Apdex vs SLA, traces with waterfall and rpm buckets, labelled synthetic traffic toggle, service drawer |
-| `/workflows` | xyflow automation builder: palette from the step registry, per-node settings, save / clone / delete, run timeline, history |
-| `/jvm` | Jolokia / Actuator / simulated targets, monitor, visual GC, threads with deadlock detection, statistical sampler call tree, MBeans, persisted dumps, anatomy tree |
-| `/config` | compose visualiser + validator, dependency-free HCL/Terraform parser with a reference graph, GitHub repo overview + issue graph + rollups + file browser, bounded workspace scan |
-| `/cli` | preset library by category, ad-hoc runner, terminal output with exit / duration / truncation badges, history, detected binaries |
+| `/dockflow` | engine card with probe latency and warnings, busiest containers, prune actions, per-project start/restart/stop, APM snapshot, recent workflow runs, PATH scan |
+| `/dockflow/containers` | containers / images / volumes / networks tabs, metric strip, filters, row actions, `docker run` form, drawer with overview, logs (250 lines, auto-refresh), stats sparklines and exec |
+| `/dockflow/graph` | hierarchical estate map: host → compose project → service → container → networks/mounts, plus the engine resource branch. Expand/collapse pills, expand-all / collapse / fit, `X/Y visible` |
+| `/dockflow/apm` | service map (call-flow and hierarchy views), Apdex vs SLA, traces with waterfall and rpm buckets, labelled synthetic traffic toggle, service drawer |
+| `/dockflow/workflows` | xyflow automation builder: palette from the step registry, per-node settings, save / clone / delete, run timeline, history |
+| `/dockflow/jvm` | Jolokia / Actuator / simulated targets, monitor, visual GC, threads with deadlock detection, statistical sampler call tree, MBeans, persisted dumps, anatomy tree |
+| `/dockflow/config` | compose visualiser + validator, dependency-free HCL/Terraform parser with a reference graph, GitHub repo overview + issue graph + rollups + file browser, bounded workspace scan |
+| `/dockflow/cli` | preset library by category, ad-hoc runner, terminal output with exit / duration / truncation badges, history, detected binaries |
 
 ## API
 

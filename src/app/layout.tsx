@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import { ThemeWatcher } from "@/components/theme/ThemeWatcher";
-import { AppShell } from "@/components/shell/AppShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DOCKFLOW · local ops console",
+  title: "RACMOND · Helios Ops & Dockflow console",
   description:
-    "Local-first control room for Docker estates: hierarchical topology, APM service map, workflow automation, JVM diagnostics, config review and CLI tooling.",
+    "HELIOS hierarchical control room plus the DOCKFLOW console: Docker estate topology, APM service map, workflow automation, JVM diagnostics, config review and CLI tooling.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -35,9 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           />
         </div>
         <ThemeWatcher />
-        <div className="relative z-10 h-full">
-          <AppShell>{children}</AppShell>
-        </div>
+        <div className="relative z-10 h-full">{children}</div>
       </body>
     </html>
   );
